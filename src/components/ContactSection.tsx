@@ -3,6 +3,7 @@ import ScrollReveal from "./ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { CalendarCheck, MapPin, Phone, Clock, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
+import { appointmentStore } from "@/store/appointments";
 
 const services = [
   "General Check-up",
