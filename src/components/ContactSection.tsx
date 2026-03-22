@@ -28,10 +28,16 @@ const ContactSection = () => {
     }
     setLoading(true);
     setTimeout(() => {
+      appointmentStore.add({
+        name: form.name.trim(),
+        phone: form.phone.trim(),
+        service: form.service,
+        date: form.date,
+      });
       setLoading(false);
       toast.success("Appointment request submitted! We'll contact you shortly.");
       setForm({ name: "", phone: "", service: "", date: "" });
-    }, 1000);
+    }, 600);
   };
 
   return (
