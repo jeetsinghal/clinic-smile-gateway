@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "react-router-dom";
 
 const navLinks = [
   { label: "Home", href: "#home" },
@@ -12,6 +14,7 @@ const navLinks = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const { user, isAdmin } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border/50 transition-all duration-300">
@@ -45,9 +48,20 @@ const Navbar = () => {
               Call Now
             </Button>
           </a>
-          <a href="#contact">
-            <Button variant="hero" size="sm">Book Appointment</Button>
-          </a>
+          {user ? (
+            <Link to={isAdmin ? "/admin" : "/dashboard"}>
+              <Button variant="hero" size="sm">
+                {isAdmin ? "Admin Panel" : "My Dashboard"}
+              </Button>
+            </Link>
+          ) : (
+            <Link to="/login">
+              <Button variant="hero" size="sm" className="gap-2">
+                <LogIn className="w-4 h-4" />
+                Login
+              </Button>
+            </Link>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -80,9 +94,19 @@ const Navbar = () => {
                   <Phone className="w-4 h-4" /> Call
                 </Button>
               </a>
-              <a href="#contact" className="flex-1" onClick={() => setOpen(false)}>
-                <Button variant="hero" size="sm" className="w-full">Book Now</Button>
-              </a>
+              {user ? (
+                <Link to={isAdmin ? "/admin" : "/dashboard"} className="flex-1" onClick={() => setOpen(false)}>
+                  <Button variant="hero" size="sm" className="w-full">
+                    {isAdmin ? "Admin" : "Dashboard"}
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/login" className="flex-1" onClick={() => setOpen(false)}>
+                  <Button variant="hero" size="sm" className="w-full gap-2">
+                    <LogIn className="w-4 h-4" /> Login
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>
