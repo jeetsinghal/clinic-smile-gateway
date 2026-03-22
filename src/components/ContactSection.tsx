@@ -3,7 +3,8 @@ import ScrollReveal from "./ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { CalendarCheck, MapPin, Phone, Clock, Mail, Send } from "lucide-react";
 import { toast } from "sonner";
-import { appointmentStore } from "@/store/appointments";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const services = [
   "General Check-up",
@@ -19,25 +20,31 @@ const services = [
 const ContactSection = () => {
   const [form, setForm] = useState({ name: "", phone: "", service: "", date: "" });
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.phone.trim()) {
       toast.error("Please fill in your name and phone number.");
       return;
     }
     setLoading(true);
-    setTimeout(() => {
-      appointmentStore.add({
-        name: form.name.trim(),
-        phone: form.phone.trim(),
-        service: form.service,
-        date: form.date,
-      });
-      setLoading(false);
+
+    const { error } = await supabase.from("appointments").insert({
+      patient_name: form.name.trim(),
+      phone: form.phone.trim(),
+      service: form.service || null,
+      preferred_date: form.date || null,
+      user_id: user?.id || null,
+    });
+
+    if (error) {
+      toast.error("Something went wrong. Please try again.");
+    } else {
       toast.success("Appointment request submitted! We'll contact you shortly.");
       setForm({ name: "", phone: "", service: "", date: "" });
-    }, 600);
+    }
+    setLoading(false);
   };
 
   return (
